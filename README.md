@@ -1,3 +1,82 @@
+### Level 6 - Oauth2.0 & how to implement Sign in with google.
+OAuth-
+
+npm i passport-google-oauth20
+
+<!-- go to console.developers.google -->
+https://console.cloud.google.com/apis/dashboard?pli=1&project=coastal-setting-272121&organizationId=0
+
+create an account and go to credentials
+1 Go to Oauth consent screen
+
+After that fill the js url and redirect url
+
+### npm install mongoose-findorcreate
+
+Added // mongoose-find-or-create
+const findOrCreate = require('mongoose-findorcreate');
+
+
+callbackURL = redirect url
+<!-- App.js -->
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/secrets",
+  userProfileURL: "http://www.googleapis.com/oauth2/v3/userinfo"
+}, (accessToken, refreshToken, profile, done) => {
+  User.findOrCreate({
+    googleId: profile.id
+  }, (err, user) => {
+    if (err) {
+      return done(err);
+    }
+    return done(null, user);
+  });
+}));
+
+<!-- After that go to Register.ejs -->
+    <!-- <div class="col-sm-4">
+      <div class="card social-block">
+        <div class="card-body">
+          <a class="btn btn-block" href="/auth/google" role="button">
+            <i class="fab fa-google"></i>
+            Sign Up with Google
+          </a>
+        </div>
+      </div>
+    </div> -->
+
+
+// initialize authentication with google
+app.get("/auth/google", passport.authenticate("google", {scope: ["profile"]}));
+
+<!-- Last udes the serializers -->
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user);
+  });
+});
+
+<!-- For getting the google id we change the userschema added googleId-->
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+  },
+  password: {
+    type: String,
+  },
+  googleId: {
+    type: String,
+  }
+});
+
+
+
 ### Using cookies and sessiions wanted Libraries
 passport
 passport-local
