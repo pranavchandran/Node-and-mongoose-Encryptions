@@ -1,0 +1,3 @@
+### Password encryption
+
+mongoose-encryption
